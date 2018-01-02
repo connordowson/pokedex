@@ -5,20 +5,18 @@ function capitalise(string)
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function getTypeColor(string){
+
+    return typeColors[string];
+
+}
+
 let pokemonStyle = {
     display: "inline-block",
     padding: "20px"
 };
 
-let typeStyle = {
-    display: "inline-block",
-    padding: "5px",
-    borderRadius: "2px",
-    margin: "0 5px 0 5px"
-};
-
 let typeColors = {
-
     bug: "#A8B820",
     dark: "#705848",
     dragon: "#7038F8",
@@ -36,8 +34,14 @@ let typeColors = {
     rock: "#B8A038",
     steel: "#B8B8D0",
     water: "#6890F0"
-
 }
+
+let typeStyle = {
+    display: "inline-block",
+    padding: "5px",
+    borderRadius: "5px",
+    margin: "0 5px 0 5px",
+};
 
 const urlForPokemon = pokedexNo => `https://pokeapi.co/api/v2/pokemon/${pokedexNo}`
 
@@ -77,8 +81,7 @@ class Pokemon extends Component {
 
             this.setState({
 
-                pokemonData: d,
-                type1: d.types[0].type.name
+                pokemonData: d,               
 
             })
 
@@ -97,7 +100,7 @@ class Pokemon extends Component {
     
                     <img src={this.state.pokemonData.sprites.front_default}/>
                     <h3> {capitalise(this.state.pokemonData.name)} </h3>
-                    <div style={typeStyle} style={{backgroundColor: typeColors.grass}} className="type"> {capitalise(this.state.pokemonData.types[0].type.name)} </div>
+                    <div style={{...typeStyle, backgroundColor:  getTypeColor(this.state.pokemonData.types[0].type.name)}}  className="type"> {capitalise(this.state.pokemonData.types[0].type.name)} </div>
     
                 </div>
             
@@ -111,8 +114,8 @@ class Pokemon extends Component {
     
                     <img src={this.state.pokemonData.sprites.front_default}/>
                     <h3> {capitalise(this.state.pokemonData.name)} </h3>
-                    <div style={typeStyle}  className="type"> {capitalise(this.state.pokemonData.types[1].type.name)} </div>
-                    <div style={typeStyle}  className="type"> {capitalise(this.state.pokemonData.types[0].type.name)} </div>
+                    <div style={{...typeStyle, backgroundColor:  getTypeColor(this.state.pokemonData.types[1].type.name)}}  className="type"> {capitalise(this.state.pokemonData.types[1].type.name)} </div>
+                    <div style={{...typeStyle, backgroundColor:  getTypeColor(this.state.pokemonData.types[0].type.name)}}  className="type"> {capitalise(this.state.pokemonData.types[0].type.name)} </div>
     
                 </div>
             
