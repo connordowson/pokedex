@@ -7,7 +7,7 @@ function capitalise(string)
 
 function getTypeColor(string){
 
-    return typeColors[string];
+    return typeColors[string]
 
 }
 
@@ -43,7 +43,7 @@ let typeStyle = {
     margin: "0 5px 0 5px",
 };
 
-const urlForPokemon = pokedexNo => `https://pokeapi.co/api/v2/pokemon/${pokedexNo}`
+let urlForPokemon = pokedexNo => `https://pokeapi.co/api/v2/pokemon/${pokedexNo}`
 
 
 class SearchBar extends Component {
@@ -54,7 +54,11 @@ class SearchBar extends Component {
                 
             <div>
 
-                <input type="search" />
+                <input type="search" onKeyUp={
+                    
+                    event => this.props.onTextChange(event.target.value)
+                    
+                }/>
 
             </div>
         
@@ -67,82 +71,107 @@ class SearchBar extends Component {
 
 class Pokemon extends Component {
 
-    constructor(props){
 
-        super(props)
-        this.state = {}
-    }
-
-    componentDidMount(){
-
-        fetch(urlForPokemon(this.props.pokedexNo))
-        .then(d => d.json())
-        .then(d => {
-
-            this.setState({
-
-                pokemonData: d,               
-
-            })
-
-        })
-
-    }
-    
         render(){
-
-            if(!this.state.pokemonData) return <p style={pokemonStyle}> Loading... </p>
-
-            if(!this.state.pokemonData.types[1]) return (
-
-                    
-                <div style={pokemonStyle}>
+   
+            let thisPokemon = this.props.pokemon
+  
+            return(            
     
-                    <img src={this.state.pokemonData.sprites.front_default}/>
-                    <h3> {capitalise(this.state.pokemonData.name)} </h3>
-                    <div style={{...typeStyle, backgroundColor:  getTypeColor(this.state.pokemonData.types[0].type.name)}}  className="type"> {capitalise(this.state.pokemonData.types[0].type.name)} </div>
-    
-                </div>
-            
+                        
+                    <div style={pokemonStyle} name={thisPokemon.name}>
+        
+                        <img src={"./assets/pokemon/" + thisPokemon.id +  ".png"}/>
+                        <h3> {capitalise(thisPokemon.name)} </h3>
+                        <h4> #{thisPokemon.id} </h4>
+        
+                    </div>
+                
             );
-
-            
-            return (
-
-                    
-                <div style={pokemonStyle}>
-    
-                    <img src={this.state.pokemonData.sprites.front_default}/>
-                    <h3> {capitalise(this.state.pokemonData.name)} </h3>
-                    <div style={{...typeStyle, backgroundColor:  getTypeColor(this.state.pokemonData.types[1].type.name)}}  className="type"> {capitalise(this.state.pokemonData.types[1].type.name)} </div>
-                    <div style={{...typeStyle, backgroundColor:  getTypeColor(this.state.pokemonData.types[0].type.name)}}  className="type"> {capitalise(this.state.pokemonData.types[0].type.name)} </div>
-    
-                </div>
-            
-            );
-    
-            
+                
         }
     
     }
 
 class App extends Component {
 
+    constructor(props){
+
+        super(props)
+        this.state = {data : {}}
+    }
+
+    componentDidMount(){
+
+        let allNames = []
+
+        fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
+        .then(apiCall => apiCall.json())
+        .then(apiCall => {
+
+            apiCall.results.map((names, index) => 
+            
+                allNames[index + 1] = {"id": index + 1, "name": names.name}
+
+            )
+
+            setTimeout(() => {
+
+                this.setState({
+
+                    data: {pokemonData: apiCall, pokemonInfo: allNames},
+                    filterString : ''
+                    
+                    
+
+                })
+            }, 1000);
+
+          
+
+        })
+
+    }
+
     render(){
 
         return (
             <div id="app">
                 <h1> Pokédex </h1>
-                <SearchBar />
-                <Pokemon pokedexNo={"1"} />
-                <Pokemon pokedexNo={"2"} />
-                <Pokemon pokedexNo={"3"} />
-                <Pokemon pokedexNo={"4"} />
-                <Pokemon pokedexNo={"5"} />
-                <Pokemon pokedexNo={"6"} />
-                <Pokemon pokedexNo={"7"} />
-                <Pokemon pokedexNo={"8"} />
-                <Pokemon pokedexNo={"9"} />
+                <SearchBar onTextChange={text => this.setState({filterString: text})} />
+
+                {this.state.data.pokemonData ?
+
+                <div>
+
+                    
+                    {/* {this.state.data.pokemonInfo.filter(pokemon =>
+
+                        pokemon.name.includes("")
+
+
+                    ).map((pokemon) =>
+
+                        <Pokemon pokemon={pokemon}/>
+                   
+                    )} */}
+
+                    {this.state.data.pokemonInfo.filter(pokemon =>
+
+                        pokemon.name.includes(
+                            this.state.filterString.toLowerCase()
+                        )
+                    
+                    ).map((pokemon) =>
+
+                        <Pokemon pokemon={pokemon}/>
+                   
+                    )}
+
+                </div>
+
+                : <p> Loading </p>}
+
             </div>
 
         );

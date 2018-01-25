@@ -1,4 +1,5 @@
 var path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 var webpack = require('webpack');
 
 
@@ -66,7 +67,8 @@ module.exports = {
 
                     options: {
 
-                        name: "./assets/[name].[ext]"
+                        name: "./assets/[name].[ext]",
+                        publicPath: 'assets/'
 
                     }
                 }
@@ -74,6 +76,16 @@ module.exports = {
             }
 
         ]
-    }
+    },
+
+    plugins: [
+
+        new CopyWebpackPlugin([
+
+            {from: "./src/assets/", to: "./assets/"}
+
+        ])
+
+    ]
 
 }
